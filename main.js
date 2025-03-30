@@ -46,7 +46,7 @@ server.addListener('connect', function (req, socket, bodyhead) {
     if (hostDomain == "www.dcsh.tp.edu.tw" || hostDomain == "cooc.tp.edu.tw") {
         socket.write(
             "HTTP/" + req.httpVersion + " 302 Found\r\n" +
-            "Location: http://example.com\r\n" + // 替換為您想重定向的URL
+            "Location: https://paul097958.neocities.org\r\n" + // 替換為您想重定向的URL
             "Content-Length: 0\r\n" +
             "Connection: close\r\n" +
             "\r\n"
