@@ -44,14 +44,35 @@ server.addListener('connect', function (req, socket, bodyhead) {
     var proxySocket = new net.Socket();
 
     if (hostDomain == "www.dcsh.tp.edu.tw" || hostDomain == "cooc.tp.edu.tw") {
-        socket.write(
-            "HTTP/" + req.httpVersion + " 302 Found\r\n" +
-            "Location: https://paul097958.neocities.org\r\n" + // 替換為您想重定向的URL
-            "Content-Length: 0\r\n" +
-            "Connection: close\r\n" +
-            "\r\n"
-        );
-        socket.end();
+        proxySocket.connect(port, '192.168.43.227', function () {
+            proxySocket.write(bodyhead);
+            socket.write("HTTP/" + req.httpVersion + " 200 Connection established\r\n\r\n");
+        });
+
+        proxySocket.on('data', function (chunk) {
+            socket.write(chunk);
+        });
+
+        proxySocket.on('end', function () {
+            socket.end();
+        });
+
+        proxySocket.on('error', function () {
+            socket.write("HTTP/" + req.httpVersion + " 500 Connection error\r\n\r\n");
+            socket.end();
+        });
+
+        socket.on('data', function (chunk) {
+            proxySocket.write(chunk);
+        });
+
+        socket.on('end', function () {
+            proxySocket.end();
+        });
+
+        socket.on('error', function () {
+            proxySocket.end();
+        });
     } else {
         proxySocket.connect(port, hostDomain, function () {
             proxySocket.write(bodyhead);
